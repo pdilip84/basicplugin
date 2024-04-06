@@ -79,6 +79,24 @@ register_deactivation_hook(__FILE__, 'basic_deactivation_fun');
 
 function basic_plugin_shortcode()
 {
-    return "<H1>This is a basic plugin</H1>";
+    return "<H1 class='basicplugin-title'>This is a basic plugin</H1>";
 }
 add_shortcode('basic-plugin', 'basic_plugin_shortcode');
+
+/* step 4 */
+// First let's create a css folder with a css file and js folder with js file
+// We can't add css/js direct here, we need to add into header hook.
+function add_basicplugin_script()
+{
+    // we can give static verion as number but it creates cache issue so if we want to load these css & js each time we need to add version number as last edited the file so by this way when file is edited, that version number is automatically added to this function and it will always loaded from server rather than cache.
+
+    $version = filemtime(plugin_dir_path(__FILE__) . '/js/main.js');
+
+    // echo $version;
+    $js_path = plugins_url('/js/main.js', __FILE__);
+    wp_enqueue_script('basic-plugin-js', $js_path, array(), $version, true);
+
+    $css_path = plugins_url('/css/main.css', __FILE__);
+    wp_enqueue_style('basic-plugin-style', $css_path, array(), $version);
+}
+add_action('wp_enqueue_scripts', 'add_basicplugin_script');
