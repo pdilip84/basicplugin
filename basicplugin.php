@@ -99,7 +99,7 @@ function basic_plugin_shortcode_parm($atts)
         'salary' => 'Not declared'
     ), $atts);
 
-    print_r($atts);
+    // print_r($atts);
     return "<H1 class='basicplugin-title'>User named $atts[username] is working as $atts[jobdesc] and his/her salary is $atts[salary]</H1>";
 }
 add_shortcode('basic-plugin-parm', 'basic_plugin_shortcode_parm');
@@ -122,3 +122,34 @@ function add_basicplugin_script()
     wp_enqueue_style('basic-plugin-style', $css_path, array(), $version);
 }
 add_action('wp_enqueue_scripts', 'add_basicplugin_script');
+
+/* step 7 */
+
+function display_posts_fun()
+{
+    // get help from handbook to set argument array https://developer.wordpress.org/reference/classes/wp_query/#post-page-parameters
+
+    // We will use wp_Query class and create a new object and pass arguments. Argements are very important to filter, order the data.
+
+    // ob_start() is function from where we are going to store output into variable & when output is over we use ob_get_clean() method. That is stored as variable, just return that variable. If you do not then your html will display on top of the page.
+
+    $arg = array(
+        'post_type' => 'post',
+        'orderby' => 'id',
+        'order' => 'DESC',
+        's' => 'example'
+    );
+    $this_query = new WP_Query($arg);
+    if ($this_query->have_posts()) {
+        ob_start();
+        while ($this_query->have_posts()) {
+            $this_query->the_post();
+            echo '<ul>';
+            echo "<li>" . get_the_title(), get_the_content() . "</li>";
+            echo '</ul>';
+        }
+        $html = ob_get_clean();
+        return $html;
+    }
+}
+add_shortcode('display-posts', 'display_posts_fun');
