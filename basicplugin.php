@@ -83,7 +83,29 @@ function basic_plugin_shortcode()
 }
 add_shortcode('basic-plugin', 'basic_plugin_shortcode');
 
-/* step 4 */
+/* step 5 */
+function basic_plugin_shortcode_parm($atts)
+{
+    // Declare shortcode on page like [basic-plugin-parm username="Dilip" jobdesc="Website Developer" salary="3lac per anum"]
+
+    // Another shortcode in backend is [basic-plugin-parm username="Janak"] which is not having all attributes so in such case we have to define default value of attributes
+
+    // normalize attribute keys, lowercase
+    $atts = array_change_key_case($atts, CASE_LOWER);
+
+    $atts = shortcode_atts(array(
+        'username' => 'Not defined',
+        'jobdesc' => 'Author',
+        'salary' => 'Not declared'
+    ), $atts);
+
+    print_r($atts);
+    return "<H1 class='basicplugin-title'>User named $atts[username] is working as $atts[jobdesc] and his/her salary is $atts[salary]</H1>";
+}
+add_shortcode('basic-plugin-parm', 'basic_plugin_shortcode_parm');
+
+/* step 6 */
+
 // First let's create a css folder with a css file and js folder with js file
 // We can't add css/js direct here, we need to add into header hook.
 function add_basicplugin_script()
