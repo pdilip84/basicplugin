@@ -28,6 +28,7 @@ You can create a basic custom plugin by boilerplate tool like https://wppb.me/
 
  Step - 7: how to fetch data from tables using wp_Query class
  
+ Step - 8: How to add post meta as viewcount into DB and add/update & display it for each post
 */
 
 // For security purpose we creted a blank index.php file and we checked if ABSPATH is defined or not. It is defined if your plugin directory is accessed by default WordPress structure. If someone tied to access plugin file directlry through URL, It is not permitted.
@@ -145,7 +146,7 @@ function display_posts_fun()
         while ($this_query->have_posts()) {
             $this_query->the_post();
             echo '<ul>';
-            echo "<li>" . get_the_title(), get_the_content() . "</li>";
+            echo "<li><a href=" . get_the_permalink() . ">" . get_the_title(), "</a> Viewcount:  " . get_post_meta(get_the_ID(), 'viewcount', true), get_the_content() . "</li>";
             echo '</ul>';
         }
         $html = ob_get_clean();
@@ -153,3 +154,29 @@ function display_posts_fun()
     }
 }
 add_shortcode('display-posts', 'display_posts_fun');
+
+/* Step 8*/
+function custom_post_meta_fun()
+{
+    // To use the post id we need to get it as global variable
+    global $post;
+    // Check if single post is loading
+    if (is_single()) {
+        // echo 'How r you?';
+        $viewcount = get_post_meta($post->ID, 'viewcount', true);
+
+        // echo $viewcount;
+        // echo var_dump($viewcount);
+
+        // if we have not result of viewcount tne add as first view as 1
+        if ($viewcount == '') {
+            add_post_meta($post->ID, 'viewcount', 1, true);
+        } else {
+            $viewcount++;
+            update_post_meta($post->ID, 'viewcount', $viewcount);
+        }
+        echo get_post_meta($post->ID, 'viewcount', true);
+    }
+}
+// when wp head loads, we create/update viewcount for post into the DB
+add_action('wp_head', 'custom_post_meta_fun');
